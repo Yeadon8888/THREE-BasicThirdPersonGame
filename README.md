@@ -1,138 +1,49 @@
-# THREE.BasicThirdPersonGame
+﻿# THREE.BasicThirdPersonGame —— 增强版第三人称 3D 游戏脚手架
 
-## JavaScript starter kit for your next WebGL 3D game based on THREE.js + Cannon.js
+基于 THREE.js r61 与 Cannon.js 0.5.0 的第三人称 3D 游戏入门框架，内置输入系统、角色控制、物理碰撞、摄像机跟随以及可扩展的关卡逻辑。本仓库在原始示例的基础上提供了增强 Demo、可交互评分系统和 Playwright 自动化测试，方便你在 GitHub Pages 上快速发布演示页面。
 
-THREE.BasicThirdPersonGame is a free open source JavaScript micro-framework for WebGL games based on THREE.js and Cannon.js. THREE.js is one of the most popular 3D engines on the web while Cannon.js represents a simple, fast and lightweight physics engine. You can use rigid bodies, friction, restitution, collision detection and constraints.
-Here is a list of what is included in this boilerplate:
+## 核心特性
+- **模块化架构**：js/game/ 目录按功能拆分渲染、物理、事件、UI 等模块，便于定制。
+- **物理与渲染联动**：利用 Cannon.js 管理刚体与碰撞，THREE.js 负责可视化，同步更新确保表现一致。
+- **增强 Demo**：默认首页（index.html）展示收集物、移动平台、分数面板等玩法元素。
+- **自动化测试**：Playwright 端到端脚本覆盖页面加载、玩家输入、积分与平台逻辑。
 
-* an input system
-* player movement/jumping
-* a level reset mechanism
-* math helper methods
-* adjustable camera viewport
-* Cannon.js-optimized processing of imported 3D models
+## 快速开始
+1. 安装依赖：
+pm install
+2. 启动本地静态服务器：python -m http.server 8000
+3. 打开浏览器访问 http://localhost:8000/
 
-So the framework forms the starting point for a 3D game using a third-person camera system. In contrast to a first-person (or ego) perspective, a third-person camera automatically follows the main player character or player vehicle of the game and provides an "over the shoulder" view. So the follow camera keeps track of the orientation of the player and sticks to his position by using a fixed distance.
+> 若使用 VS Code Live Server 或其它 HTTP 服务，请确保根目录即仓库根，并保持端口与测试配置一致（默认 8000）。
 
-![THREE.BasicThirdPersonGame](http://matthias-schuetz.github.io/three-basicthirdpersongame/three-basicthirdpersongame.png "THREE.BasicThirdPersonGame")
+## 构建与测试
+- 
+px grunt：压缩 js/libs/、js/game/ 中的脚本并生成 js/dist/ 和聚合文件 js/game.js
+- 
+px playwright test：运行完整 Playwright 测试套件，自动在 8000 端口启动 python -m http.server
+- 
+px playwright test --ui：以交互界面调试测试用例
 
-## Usage
+建议在提交前依次执行以上命令，保证构建产物与测试结果可复现。
 
-For a detailed documentation, head over to the [docs](doc/DOCS.md) or the <a href="https://github.com/matthias-schuetz/THREE-BasicThirdPersonGamedocs">official website</a> and learn how to use it. THREE.BasicThirdPersonGame ought to be an interactive tutorial and starting point for your WebGL game based on THREE.js. On this page you should get on overview of how to get the framework up and running. Check out the examples and dive into the code for a deeper impression. The code of all JavaScript files is fully commented.
+## GitHub Pages 发布指南
+1. 仓库设置 → Pages，选择 main 分支与根目录（/）
+2. 构建完成后，GitHub 会以 index.html 作为入口暴露静态站点
+3. 若需要多 Demo，可保留 demo*.html，并在 index.html 内添加导航链接
 
-Below you will find the basic setup for the game including all necessary files. Normally you start editing the game.core.js since the whole game logic is placed there. Every provided example has its own game.core.demo.js file where the logic only differs slightly. All demos are based on the main libraries and game component files.
+初次部署后通常需等待数分钟，站点将通过 https://<用户名>.github.io/<仓库名>/ 访问。
 
-The package also contains a Gruntfile which combines and obfuscates all library and game files into one minified game.js.
+## 目录结构
+`
+├─doc/                 文档与设计说明
+├─js/
+│  ├─game/             游戏模块（核心逻辑、事件、模型等）
+│  └─libs/             固定版本的 THREE.js、Cannon.js、Detector.js 等
+├─tests/               Playwright 测试脚本
+├─playwright.config.js 测试与本地服务器配置
+├─index.html           增强 Demo（GitHub Pages 默认首页）
+└─AGENTS.md            协作者指南
+`
 
-### HTML
-
-```html
-<html>
-	<head></head>
-
-	<body>
-    	<div id="game"></div>
-    
-		<script src="js/libs/detector.js"></script>
-		<script src="js/libs/three.js"></script>
-		<script src="js/libs/cannon.js"></script>
-
-		<script src="js/game/game.static.js"></script>
-		<script src="js/game/game.three.js"></script>
-		<script src="js/game/game.cannon.js"></script>
-		<script src="js/game/game.events.js"></script>
-		<script src="js/game/game.helpers.js"></script>
-		<script src="js/game/game.ui.js"></script>
-		<script src="js/game/game.core.js"></script>
-		<script src="js/game/game.models.js"></script>
-
-		<script>
-			if (!Detector.webgl) {
-				Detector.addGetWebGLMessage();
-			} else {
-				window.gameInstance = window.game.core();
-				window.gameInstance.init({
-					domContainer: document.querySelector("#game"),
-					rendererClearColor: 0xffffff
-				});
-			}
-		</script>
-    </body>
-</html>
-```
-
-### JavaScript
-
-```javascript
-/*
- * game.core.js: init()
- * 
- * @param Object domContainer Element which will hold the final canvas element of THREE.js
- * @param Object cameraSizeConstraint Optional: Size constraint to limit viewport e.g. for a user interface
- * @param Number rendererClearColor Optional: A color value for the background color of the THREE.js canvas
- */
-
-window.gameInstance = window.game.core();
-window.gameInstance.init({
-	domContainer: document.querySelector("#game"),
-    cameraSizeConstraint: {
-    	width: 100,
-        height: 50
-    },
-	rendererClearColor: 0xffffff
-});
-```
-
-Finally we will have a look on the central place for all the game logic, the game.core.js file. This file contains the whole player and level structure including all needed properties. Some unimportant attributes have been left and those you can see below are mostly self explaining.
-
-```javascript
-window.game.core = function () {
-    var _game = {
-        // Attributes
-        player: {
-            // Attributes
-            speed: 2,
-            speedMax: 65,
-            rotationSpeed: 0.007,
-            rotationSpeedMax: 0.040,
-            damping: 0.9,
-            rotationDamping: 0.8,
-            cameraOffsetH: 280,
-            cameraOffsetV: 180,
-
-            // Methods
-            create: function() {},
-            update: function() {},
-            updateCamera: function() {},
-            updateAcceleration: function() {},
-            processUserInput: function() {},
-            accelerate: function() {},
-            rotate: function() {},
-            jump: function() {},
-            updateOrientation: function() {}
-        },
-        level: {
-            // Methods
-            create: function() {}
-        },
-
-        // Methods
-        init: function() {},
-        destroy: function() {},
-        loop: function() {},
-        initComponents: function () {}
-    };
-
-    return _game;
-};
-```
-
-The player's acceleration and rotation as well as the camera movement are defined here. The snippet also represents a basic game where the player can be controlled through a simple level. For the platforms demo game, simply the level object has been extended with additional logic. Of course you could add more JavaScript files for more complex levels.
-
-## Notes
-
-A last important notice here applies to the used versions of THREE.js and Cannon.js. Both scripts are under active development and improved by their authors from time to time. THREE.BasicThirdPersonGame is based on <a href="https://github.com/mrdoob/three.js/tree/r61">THREE.js r61</a> and <a href="https://github.com/danielribeiro/cannon.js/">Cannon.js 0.5.0 (fork by Daniel Ribeiro)</a>. The best advice is just to stick to the library files that come with THREE.BasicThirdPersonGame so you don't have to care about this topic. Maybe there will be an update to this framework in the future to work with newer versions of the libraries but you can also contribute to do this by yourself.
-
-## License
-
-THREE.BasicThirdPersonGame is released under the MIT license.
+## 许可协议
+项目以 [MIT](LICENSE) 协议开源，可自由用于学习、修改与商用，但请在再分发时保留原始许可信息。

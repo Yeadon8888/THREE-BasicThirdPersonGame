@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>THREE.BasicThirdPersonGame - Enhanced Demo</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<style type="text/css">
+			html, body {
+				width:100%;
+				height:100%;
+				font-family:Arial, Helvetica, sans-serif;
+				margin:0;
+				padding:0;
+				overflow:hidden;
+			}
+
+			.infobox {
+				position:fixed;
+				top:30px;
+				left:50%;
+				width:600px;
+				height:320px;
+				padding:10px 30px;
+				margin:0 0 0 -300px;
+				background:#ffffff;
+				box-sizing:border-box;
+			}
+
+			.fade-out {
+				opacity:0;
+				transition:opacity 2000ms;
+				-webkit-transition:opacity 2000ms;
+			}
+
+			.score {
+				position:fixed;
+				top:20px;
+				left:20px;
+				color:#333;
+				font-size:24px;
+				font-weight:bold;
+				text-shadow:2px 2px 4px rgba(0,0,0,0.3);
+				z-index:100;
+			}
+
+			.collect-effect {
+				position:fixed;
+				top:50%;
+				left:50%;
+				transform:translate(-50%, -50%);
+				color:#4CAF50;
+				font-size:48px;
+				font-weight:bold;
+				pointer-events:none;
+				animation:collectPulse 1s ease-out forwards;
+				z-index:200;
+			}
+
+			@keyframes collectPulse {
+				0% { transform:translate(-50%, -50%) scale(0.5); opacity:0; }
+				50% { transform:translate(-50%, -50%) scale(1.2); opacity:1; }
+				100% { transform:translate(-50%, -50%) scale(1.5); opacity:0; }
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="game"></div>
+		<div class="score">Score: <span id="scoreValue">0</span></div>
+
+		<div id="infobox-intro" class="infobox">
+			<h2>Welcome to the Enhanced THREE.BasicThirdPersonGame!</h2>
+			<p>You can control the player by using the follow keys:</p>
+			<p>W &rarr; Forward<br />S &rarr; Backward<br />A &rarr; Left<br />D &rarr; Right<br />SPACE &rarr; Jump</p>
+			<p>Collect the golden cubes and avoid falling!</p>
+			<p>Watch for moving platforms - they'll help you reach higher areas!</p>
+		</div>
+
+		<script src="js/libs/stats.min.js"></script>
+
+		<script src="js/libs/detector.js"></script>
+		<script src="js/libs/three.js"></script>
+		<script src="js/libs/cannon.js"></script>
+
+		<script src="js/game/game.static.js"></script>
+		<script src="js/game/game.three.js"></script>
+		<script src="js/game/game.cannon.js"></script>
+		<script src="js/game/game.events.js"></script>
+		<script src="js/game/game.helpers.js"></script>
+		<script src="js/game/game.ui.js"></script>
+		<script src="js/game/game.core.enhanced.js"></script>
+		<script src="js/game/game.models.js"></script>
+
+		<script>
+			if (!Detector.webgl) {
+				Detector.addGetWebGLMessage();
+			} else {
+				window.gameInstance = window.game.core();
+				window.gameInstance.init({
+					domContainer: document.querySelector("#game"),
+					rendererClearColor: window.game.static.white
+				});
+			}
+
+			// STATS VIA MONKEY PATCH
+			(function() {
+				var gameLoop = window.gameInstance.loop;
+				var stats = new Stats();
+
+				stats.domElement.style.position = "absolute";
+				stats.domElement.style.left = "0px";
+				stats.domElement.style.top = "0px";
+
+				document.body.appendChild( stats.domElement );
+
+				window.gameInstance.loop = function() {
+					stats.begin();
+					gameLoop();
+					stats.end();
+				}
+			})();
+		</script>
+	</body>
+</html>

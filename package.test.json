@@ -1,0 +1,21 @@
+{
+  "name": "THREE.BasicThirdPersonGame-Enhanced",
+  "version": "1.0.0",
+  "description": "Enhanced Three.js game with testing capabilities",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "install:browsers": "playwright install",
+    "start": "python -m http.server 8000",
+    "build": "grunt"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "playwright": "^1.40.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
